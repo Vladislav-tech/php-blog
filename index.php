@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -32,13 +34,17 @@ $postMapper = new PostMapper($connection);
 // Create app
 $app = AppFactory::create();
 
-$app->get('/', function (Request $request, Response $response, $args) use ($view) {
-    $body = $view->render('index.twig');
+$app->get('/', function (Request $request, Response $response) use ($view, $postMapper) {
+    $posts = $postMapper->getAllPosts();
+
+    $body = $view->render('index.twig', [
+        'posts' => $posts
+    ]);
     $response->getBody()->write($body);
     return $response;
 });
 
-$app->get('/about', function (Request $request, Response $response, $args) use ($view) {
+$app->get('/about', function (Request $request, Response $response) use ($view) {
     $body = $view->render('about.twig', [
         'name' => 'Max'
     ]);
@@ -46,7 +52,7 @@ $app->get('/about', function (Request $request, Response $response, $args) use (
     return $response;
 });
 
-$app->get('/{url_key}', function (Request $request, Response $response, $args) use ($view, $postMapper) {
+$app->get('/{url_key}', function (Request $request, Response $response, array $args) use ($view, $postMapper) {
     $post = $postMapper->getByUrlKey((string) $args['url_key']);
 
     if (empty($post)) {
