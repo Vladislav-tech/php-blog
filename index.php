@@ -11,7 +11,9 @@ use Vladislav\PhpBlog\PostMapper;
 use Vladislav\PhpBlog\LatestPosts;
 use DI\ContainerBuilder;
 use Vladislav\PhpBlog\Database;
+
 use Vladislav\PhpBlog\Route\HomePage;
+use Vladislav\PhpBlog\Route\AboutPage;
 
 
 require __DIR__ . '/vendor/autoload.php';
@@ -36,13 +38,7 @@ $app = AppFactory::create();
 
 $app->get('/', HomePage::class . ':execute');
 
-$app->get('/about', function (Request $request, Response $response) use ($view) {
-    $body = $view->render('about.twig', [
-        'name' => 'Max'
-    ]);
-    $response->getBody()->write($body);
-    return $response;
-});
+$app->get('/about', AboutPage::class);
 
 $app->get('/blog[/{page}]', function (Request $request, Response $response, array $args) use ($view, $connection) {
     $postMapper = new PostMapper($connection);
