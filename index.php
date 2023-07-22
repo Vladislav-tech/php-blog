@@ -11,12 +11,11 @@ use Vladislav\PhpBlog\PostMapper;
 use Vladislav\PhpBlog\LatestPosts;
 use DI\ContainerBuilder;
 use Vladislav\PhpBlog\Database;
-//use Vladislav\PhpBlog\Slim\TwigMiddleware;
+use Vladislav\PhpBlog\Route\HomePage;
+
 
 require __DIR__ . '/vendor/autoload.php';
 
-//$loader = new FilesystemLoader('templates');
-//$view = new Environment($loader);
 
 $builder = new ContainerBuilder();
 $builder->addDefinitions('config/di.php');
@@ -30,37 +29,12 @@ $connection = $container->get(Database::class)->getConnection();
 
 AppFactory::setContainer($container);
 
-//$config = include 'config/database.php';
-//$dsn = $config['dsn'];
-//$username = $config['username'];
-//$password = $config['password'];
-//
-//try {
-//    $connection = new PDO($dsn, $username, $password);
-//    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//    $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-//
-//}   catch(PDOException $exception) {
-//    print_r('Database error: '. $exception->getMessage());
-//    die();
-//}
-
 $postMapper = new PostMapper($connection);
 
 // Create app
 $app = AppFactory::create();
-//$app->add(new TwigMiddleware($view));
 
-$app->get('/', function (Request $request, Response $response) use ($view, $connection) {
-    $latestPosts = new LatestPosts($connection);
-    $posts = $latestPosts->get();
-
-    $body = $view->render('index.twig', [
-        'posts' => $posts
-    ]);
-    $response->getBody()->write($body);
-    return $response;
-});
+$app->get('/', HomePage::class . ':execute');
 
 $app->get('/about', function (Request $request, Response $response) use ($view) {
     $body = $view->render('about.twig', [
