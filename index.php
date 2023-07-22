@@ -8,6 +8,7 @@ use Slim\Factory\AppFactory;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use Vladislav\PhpBlog\PostMapper;
+use Vladislav\PhpBlog\LatestPosts;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -34,8 +35,9 @@ $postMapper = new PostMapper($connection);
 // Create app
 $app = AppFactory::create();
 
-$app->get('/', function (Request $request, Response $response) use ($view, $postMapper) {
-    $posts = $postMapper->getAllPosts();
+$app->get('/', function (Request $request, Response $response) use ($view, $connection) {
+    $latestPosts = new LatestPosts($connection);
+    $posts = $latestPosts->get();
 
     $body = $view->render('index.twig', [
         'posts' => $posts
@@ -52,7 +54,23 @@ $app->get('/about', function (Request $request, Response $response) use ($view) 
     return $response;
 });
 
-$app->get('/{url_key}', function (Request $request, Response $response, array $args) use ($view, $postMapper) {
+$app->get('/blog[/{page}]', function (Request $request, Response $response, array $args) use ($view, $connection) {
+    $latestPosts = new PostMapper($connection);
+
+    $page = isset($args['page']) ? (int)$args['page'] : 1;
+    $limit = 2;
+
+    $posts = $latestPosts->getAllPosts($page, $limit, 'DESC');
+
+    $body = $view->render('blog.twig', [
+        'posts' => $posts
+    ]);
+    $response->getBody()->write($body);
+    return $response;
+});
+
+$app->get('/{url_key}', function (Request $request, Response $response, array $args) use ($view, $connection) {
+    $postMapper = new PostMapper($connection);
     $post = $postMapper->getByUrlKey((string) $args['url_key']);
 
     if (empty($post)) {

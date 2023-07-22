@@ -51,19 +51,28 @@ class PostMapper
 
     /**
      *  Get all posts from MySQL db.
+     * @param int $page = 1 Get page.
+     * @param int $limit = 3 How many posts on the current page will be displayed.
      * @param string|null $sortType ='DESC' Type of sorting.
      * @return array|false All posts from MySQL db or false (if were not found any posts).
      * @throws Exception
      */
-    public function getAllPosts(?string $sortType = 'DESC'): array|false
+    public function getAllPosts(int $page = 1, int $limit = 3, ?string $sortType = 'DESC'): array|false
     {
 
+        // Throw new Exception if $sortType is invalid
         if (!in_array(strtoupper($sortType), ['DESC', 'ASC'])) {
             throw new Exception('The sortType is not supported.');
         }
 
+        // Offset start
+        $start = ($page - 1) * $limit;
+
         // SQL query
-        $statement = $this->connection->prepare('SELECT * FROM post ORDER BY published_date ' . $sortType);
+        $statement = $this->connection->prepare(
+            'SELECT * FROM post ORDER BY published_date ' . $sortType .
+            ' LIMIT ' . $start . ',' . $limit
+        );
 
         // Execute SQL query. There are no values because we did not use any placeholders in SQL query
         $statement->execute();
