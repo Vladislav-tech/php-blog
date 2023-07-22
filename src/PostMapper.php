@@ -80,4 +80,22 @@ class PostMapper
         // Return all posts or false
         return $statement->fetchAll();
     }
+
+
+    /**
+     * @return int
+     */
+    public function getTotalCount(): int
+    {
+        // SQL query to count all posts in table
+        $statement = $this->connection->prepare(
+            'SELECT count(post_id) as total FROM post'
+        );
+
+        // Execute SQL query
+        $statement->execute();
+
+        // Return amount of posts or 0
+        return (int)($statement->fetchColumn() ?? 0);
+    }
 }
