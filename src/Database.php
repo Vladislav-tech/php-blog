@@ -19,16 +19,7 @@ class Database
 
     public function __construct(PDO $connection)
     {
-
-        try {
-            $this->connection = $connection;
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-        }   catch(PDOException $exception) {
-            print_r('Database error: '. $exception->getMessage());
-            die();
-        }
+        $this->connection = $connection;
     }
 
     /**
