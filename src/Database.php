@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Vladislav\PhpBlog;
 use PDO;
@@ -17,6 +18,9 @@ class Database
     private PDO $connection;
 
 
+    /**
+     * @param PDO $connection
+     */
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
