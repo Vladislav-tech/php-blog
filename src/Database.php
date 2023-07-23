@@ -16,17 +16,12 @@ class Database
      */
     private PDO $connection;
 
-    /**
-     * Constructor to set connection with db.
-     * @param string $dsn database:host=address;dbnmame=name is used to define some settings of connection.
-     * @param string|null $username Name of db user.
-     * @param string|null $password Password of user.
-     */
-    public function __construct(string $dsn, string $username = null, string $password = null)
+
+    public function __construct(PDO $connection)
     {
 
         try {
-            $this->connection = new PDO($dsn, $username, $password);
+            $this->connection = $connection;
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 

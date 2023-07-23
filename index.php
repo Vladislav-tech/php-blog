@@ -6,7 +6,6 @@ use Slim\Factory\AppFactory;
 use DevCoder\DotEnv;
 use DI\ContainerBuilder;
 
-
 use Vladislav\PhpBlog\Route\HomePage;
 use Vladislav\PhpBlog\Route\AboutPage;
 use Vladislav\PhpBlog\Route\BlogPage;
